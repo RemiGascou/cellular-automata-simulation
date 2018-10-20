@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-CellularAutomataSimulatorApp -> AboutWindow
+CellularAutomataSimulatorApp -> OpenFileWindow
 
 Author: Remi GASCOU
 Last edited: October 2018
@@ -15,11 +15,11 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 
-class AboutWindow(QWidget):
+class OpenFileWindow(QWidget):
     def __init__(self, parent=None):
-        print("[LOG] Parent of AboutWindow", parent)
-        super(AboutWindow, self).__init__()
-        self.title = 'AboutWindow'
+        print("[LOG] Parent of OpenFileWindow", parent)
+        super(OpenFileWindow, self).__init__()
+        self.title = 'OpenFileWindow'
         self.left   = 0
         self.top    = 0
         self.width  = 300
@@ -38,9 +38,10 @@ class AboutWindow(QWidget):
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0)
         self.setLayout(self.layout)
+        self.setGeometry(300, 300, 300, 100)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = AboutWindow()
+    ex = OpenFileWindow()
     sys.exit(app.exec_())

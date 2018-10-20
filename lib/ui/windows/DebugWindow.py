@@ -2,28 +2,30 @@
 # -*- coding: utf-8 -*-
 
 """
-PyChat -> DebugWindow
+CellularAutomataSimulatorApp -> DebugWindow
 
 Author: Remi GASCOU
-Last edited: July 2018
+Last edited: October 2018
 """
 
 import sys
-from lib.core import PyChatInfos
+from lib.core import CellularAutomataSimulatorAppInfos
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+
 
 class DebugWindow(QWidget):
     def __init__(self, parent=None):
         print("[LOG] Parent of DebugWindow", parent)
         super(DebugWindow, self).__init__()
-        self.setGeometry(300, 300, 300, 100)
-        self.setWindowTitle('About')
+        self.title = "DebugWindow"
         self._initUI()
         self.show()
 
     def _initUI(self):
+        self.setWindowTitle(self.title)
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
         self.layout = QFormLayout()
         self.pushbutton_addtab = QPushButton("Add Tab")
         self.pushbutton_addtab.clicked.connect(self.none)
@@ -33,7 +35,6 @@ class DebugWindow(QWidget):
         self.layout.addRow("Del Tab", self.pushbutton_deltab)
         self.setLayout(self.layout)
         self.setGeometry(300, 300, 300, 100)
-        self.setWindowTitle('Connect')
 
     @pyqtSlot()
     def none(self):

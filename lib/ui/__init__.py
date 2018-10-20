@@ -1,3 +1,4 @@
 # -*- coding: utf-8 -*-
 
-from lib.ui.widgets.CeausiCanvas import *
+from lib.ui.windows import *
+from lib.ui.widgets import *

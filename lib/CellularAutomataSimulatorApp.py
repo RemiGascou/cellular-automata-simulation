@@ -6,44 +6,52 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from lib.ui.widgets.CeausiCanvas import *
+from lib.ui import *
+from lib.core import *
 
 class CellularAutomataSimulatorApp(QMainWindow):
     """docstring for CellularAutomataSimulatorApp."""
     def __init__(self, gridwidth=10, gridheight=10, parent=None):
         super(CellularAutomataSimulatorApp, self).__init__()
-        self.title        = "Cellular Automata Simulator - v1.0"
+        self.title        = CellularAutomataSimulatorAppInfos.get_name() + " - " + CellularAutomataSimulatorAppInfos.get_versiontag()
         self.gridwidth    = gridwidth
         self.gridheight   = gridheight
         self.cellsize     = 25
         self.margin_left  = 200
         self.margin_top   = 200
         self.width        = self.gridwidth*self.cellsize
-        self.height       = self.gridheight*self.cellsize-4
+        self.height       = self.gridheight*self.cellsize
         self.timer_period = 125
         self.timer_state  = False
 
         self._initUI()
         self._initMenus()
         self.timer  = QTimer()
-        self.timer.timeout.connect(self.ceausi_canvas.updateGridEvent)
+        self.timer.timeout.connect(self.timerTimeoutEvent)
+        self.__curentIcoId = 0
+
+    def timerTimeoutEvent(self):
+        self.__curentIcoId = (self.__curentIcoId + 1)%4
+        self.setWindowIcon(QIcon('lib/meta/anim_ico_' + str(self.__curentIcoId) + '.png'))
+        self.ceausi_canvas.updateGridEvent()
 
     def _initUI(self):
         self.setWindowTitle(self.title + " - [PAUSED]")
         self.setWindowIcon(QIcon('lib/meta/ico.png'))
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
-        self.setFixedSize(self.size())
+        #self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ceausi_canvas = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
         self.setCentralWidget(self.ceausi_canvas)
         self.show()
 
     def _initMenus(self):
-        mainMenu      = self.menuBar()
-        appMenu       = mainMenu.addMenu('Ceausi')
-        #fileMenu      = mainMenu.addMenu('File')
-        #settingsMenu  = mainMenu.addMenu('Settings')
-        helpMenu      = mainMenu.addMenu('Help')
+        mainMenu        = self.menuBar()
+        appMenu         = mainMenu.addMenu('Ceausi')
+        fileMenu        = mainMenu.addMenu('File')
+        simulationMenu  = mainMenu.addMenu('Simulation')
+        settingsMenu    = mainMenu.addMenu('Settings')
+        helpMenu        = mainMenu.addMenu('Help')
 
         #appMenu buttons
         exitButton = QAction('Exit', self)
@@ -53,15 +61,20 @@ class CellularAutomataSimulatorApp(QMainWindow):
         appMenu.addAction(exitButton)
 
         #fileMenu buttons
-        #openFileButton = QAction('Open File', self)
-        #openFileButton.setShortcut('Ctrl + O')
-        #openFileButton.triggered.connect(self.start_OpenFileWindow)
-        #fileMenu.addAction(openFileButton)
+        openFileButton = QAction('Open File', self)
+        openFileButton.setShortcut('Ctrl + O')
+        openFileButton.triggered.connect(self.start_OpenFileWindow)
+        fileMenu.addAction(openFileButton)
+
+        #simulationMenu buttons
+        rulesButton = QAction('Rules', self)
+        rulesButton.triggered.connect(self.start_RulesWindow)
+        simulationMenu.addAction(rulesButton)
 
         #settingsMenu buttons
-        #viewButton = QAction('Settings', self)
-        #viewButton.triggered.connect(self.close)
-        #settingsMenu.addAction(exitButton)
+        settingsButton = QAction('Settings', self)
+        settingsButton.triggered.connect(self.close)
+        settingsMenu.addAction(settingsButton)
 
         #helpMenu buttons
         aboutButton = QAction('About', self)
@@ -72,28 +85,14 @@ class CellularAutomataSimulatorApp(QMainWindow):
         debugButton.triggered.connect(self.start_DebugWindow)
         helpMenu.addAction(debugButton)
 
-    def start_AboutWindow(self):
-        pass
-        #self.wAboutWindow = AboutWindow(self)
-        #self.wAboutWindow.show()
-
-    def start_DebugWindow(self):
-        pass
-        #self.wDebugWindow = DebugWindow(self)
-        #self.wDebugWindow.show()
-
-    def start_OpenFileWindow(self):
-        pass
-        #self.wOpenFileWindow = OpenFileWindow(self)
-        #self.wOpenFileWindow.show()
-
     def _updateUI(self):
         self.timer.stop()
         self.timer_state = False
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
         self.width  = self.gridwidth*self.cellsize
         self.height = self.gridheight*self.cellsize-4
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
-        self.setFixedSize(self.size())
+        #self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ceausi_canvas  = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
         self.setCentralWidget(self.ceausi_canvas)
@@ -106,6 +105,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
             if self.timer_state == True :
                 self.timer_state = False
                 self.timer.stop()
+                self.__curentIcoId = 0
                 self.setWindowTitle(self.title +" - [PAUSED]")
             else :
                 self.timer_state = True
@@ -118,8 +118,24 @@ class CellularAutomataSimulatorApp(QMainWindow):
         elif event.key() == Qt.Key_C:
             self.ceausi_canvas.cleargrid()
 
+# *------------------------------Windows Handlers----------------------------- *
+    def start_RulesWindow(self):
+        self.wRulesWindow = RulesWindow(self)
+        self.wRulesWindow.show()
 
-    # *----------------------------GET--SET------------------------------------*
+    def start_OpenFileWindow(self):
+        self.wOpenFileWindow = OpenFileWindow(self)
+        self.wOpenFileWindow.show()
+
+    def start_AboutWindow(self):
+        self.wAboutWindow = AboutWindow(self)
+        self.wAboutWindow.show()
+
+    def start_DebugWindow(self):
+        self.wDebugWindow = DebugWindow(self)
+        self.wDebugWindow.show()
+
+# *----------------------------------Get Set---------------------------------- *
     def get_cellsize (self):
         return self.cellsize
 

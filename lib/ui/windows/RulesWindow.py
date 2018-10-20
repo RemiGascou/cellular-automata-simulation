@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-CellularAutomataSimulatorApp -> AboutWindow
+CellularAutomataSimulatorApp -> RulesWindow
 
 Author: Remi GASCOU
 Last edited: October 2018
@@ -15,11 +15,11 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 
-class AboutWindow(QWidget):
+class RulesWindow(QWidget):
     def __init__(self, parent=None):
-        print("[LOG] Parent of AboutWindow", parent)
-        super(AboutWindow, self).__init__()
-        self.title = 'AboutWindow'
+        print("[LOG] Parent of RulesWindow", parent)
+        super(RulesWindow, self).__init__()
+        self.title = 'RulesWindow'
         self.left   = 0
         self.top    = 0
         self.width  = 300
@@ -38,9 +38,12 @@ class AboutWindow(QWidget):
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0)
         self.setLayout(self.layout)
+        self.setGeometry(300, 300, 300, 100)
+        self.setFixedSize(self.size())
+
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = AboutWindow()
+    ex = RulesWindow()
     sys.exit(app.exec_())
