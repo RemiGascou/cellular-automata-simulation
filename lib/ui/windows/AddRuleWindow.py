@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-CellularAutomataSimulatorApp -> RulesWindow
+CellularAutomataSimulatorApp -> AddRuleWindow
 
 Author: Remi GASCOU
 Last edited: October 2018
@@ -15,11 +15,11 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 
-class RulesWindow(QWidget):
+class AddRuleWindow(QWidget):
     def __init__(self, parent=None):
-        print("[LOG] Parent of RulesWindow", parent)
-        super(RulesWindow, self).__init__()
-        self.title = 'RulesWindow'
+        print("[LOG] Parent of AddRuleWindow", parent)
+        super(AddRuleWindow, self).__init__()
+        self.title = 'AddRuleWindow'
         self.left   = 0
         self.top    = 0
         self.width  = 460
@@ -43,5 +43,5 @@ class RulesWindow(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = RulesWindow()
+    ex = AddRuleWindow()
     sys.exit(app.exec_())

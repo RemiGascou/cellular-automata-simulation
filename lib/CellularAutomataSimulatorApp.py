@@ -20,7 +20,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.margin_left  = 200
         self.margin_top   = 200
         self.width        = self.gridwidth*self.cellsize
-        self.height       = self.gridheight*self.cellsize
+        self.height       = self.gridheight*self.cellsize-4
         self.timer_period = 125
         self.timer_state  = False
 
@@ -39,7 +39,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.setWindowTitle(self.title + " - [PAUSED]")
         self.setWindowIcon(QIcon('lib/meta/ico.png'))
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
-        #self.setFixedSize(self.size())
+        self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ceausi_canvas = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
         self.setCentralWidget(self.ceausi_canvas)
@@ -92,7 +92,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.width  = self.gridwidth*self.cellsize
         self.height = self.gridheight*self.cellsize-4
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
-        #self.setFixedSize(self.size())
+        self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ceausi_canvas  = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
         self.setCentralWidget(self.ceausi_canvas)

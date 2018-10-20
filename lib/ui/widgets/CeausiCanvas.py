@@ -82,7 +82,7 @@ class CeausiCanvas(QWidget):
             self.update()
 
     def mousePressEvent(self, event):
-        print('mousePressEvent at :', max(min(event.x()//self.cellsize, self.gridheight-1), 0), max(min(event.y()//self.cellsize, self.gridwidth-1), 0))
+        #print('mousePressEvent at :', max(min(event.x()//self.cellsize, self.gridheight-1), 0), max(min(event.y()//self.cellsize, self.gridwidth-1), 0))
         if event.buttons() == Qt.RightButton:
             self.__begSquare = [max(min(event.x()//self.cellsize, self.gridheight-1), 0), max(min(event.y()//self.cellsize, self.gridwidth-1), 0)]
         elif event.buttons() == Qt.LeftButton:
