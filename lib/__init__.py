@@ -2,4 +2,4 @@
 
 from lib.ui import *
 from lib.core import *
-from lib.ConwaysApp import *
+from lib.CellularAutomataSimulatorApp import *

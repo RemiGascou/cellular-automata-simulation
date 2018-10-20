@@ -6,11 +6,11 @@ from PyQt5.QtCore import *
 from numpy import array, zeros
 from random import choice
 
-from lib.core.ConwaysGrid import *
+from lib.core.CeausiGrid import *
 
-class ConwaysCanvas(QWidget):
+class CeausiCanvas(QWidget):
     def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
-        super(ConwaysCanvas, self).__init__()
+        super(CeausiCanvas, self).__init__()
         self.gridheight = gridx
         self.gridwidth  = gridy
         self.cellsize   = cellsize

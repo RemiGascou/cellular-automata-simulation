@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
 from lib.core.ImportExportGrid import *
-from lib.core.ConwaysGrid import *
+from lib.core.CeausiGrid import *

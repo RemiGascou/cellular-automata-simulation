@@ -2,9 +2,9 @@
 
 from PyQt5.QtWidgets import *
 
-class ConwaysGrid(QWidget):
+class CeausiGrid(QWidget):
     def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
-        super(ConwaysGrid, self).__init__()
+        super(CeausiGrid, self).__init__()
         self.gridheight = gridx
         self.gridwidth  = gridy
         self.valueOn    = 0

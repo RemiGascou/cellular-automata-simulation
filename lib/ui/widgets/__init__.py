@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from lib.ui.widgets.ConwaysCanvas import *
+from lib.ui.widgets.CeausiCanvas import *
