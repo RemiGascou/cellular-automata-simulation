@@ -6,7 +6,7 @@ from lib import *
 
 if __name__ == """__main__""":
     app = QApplication(sys.argv)
-    ex = CellularAutomataSimulatorApp(38,20) #76,40
+    ex = CellularAutomataSimulatorApp(37,20) #76,40
     sys.exit(app.exec_())
 
 # Key_C to clear grid

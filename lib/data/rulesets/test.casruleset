@@ -1,0 +1,12 @@
+{
+    "ruleset": {
+        "name": "Example Rules Set",
+		"rules": {
+            "rule": {
+                "name": "Test rule",
+                "setup": [[0,0,0],[0,0],[0,0,0]],
+				"outcome": "1"
+            }
+        }
+    }
+}

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtWidgets import *
+import json
+from numpy import array, zeros
+from random import choice
 
-class CeausiGrid(QWidget):
+class CeausiGrid(object):
     def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
         super(CeausiGrid, self).__init__()
         self.gridheight = gridx
@@ -14,34 +16,14 @@ class CeausiGrid(QWidget):
 
     def regen(self):
         self.grid       = self._generateRandomgrid()
-        self.update()
 
     def cleargrid(self):
         self.grid       = [[self.valueOff]*self.gridwidth]*self.gridheight
         self.applyRules()
-        self.update()
 
-    def updateGridEvent(self):
+    def updateGrid(self):
         if len(self.grid) != 0:
             self.applyRules()
-            self.update()
-
-    def paintEvent(self, e):
-        if len(self.grid) != 0:
-            qp = QPainter(self)
-            qp.setPen(QColor(self.colorLine[0], self.colorLine[1], self.colorLine[2]))
-            for xk in range(len(self.grid)):
-                for yk in range(len(self.grid[0])):
-                    if self.grid[xk][yk] == self.valueOn:
-                        qp.setBrush(QColor(self.colorOn[0], self.colorOn[1], self.colorOn[2]))
-                    else :
-                        qp.setBrush(QColor(self.colorOff[0], self.colorOff[1], self.colorOff[2]))
-                    qp.drawRect(self.cellsize*xk, self.cellsize*yk, self.cellsize*(xk+1), self.cellsize*(yk+1))
-
-    def mousePressEvent(self, event):
-        self.grid[event.x()//self.cellsize][event.y()//self.cellsize] = 1 ^ self.grid[event.x()//self.cellsize][event.y()//self.cellsize]
-        self.update()
-
 
     def _getNeighbours(self, x, y):
         """
@@ -132,11 +114,30 @@ class CeausiGrid(QWidget):
 
     def _generateRandomgrid(self):
         self.grid = [[choice([self.valueOn, self.valueOff]) for xk in range(self.gridwidth)] for yk in range(self.gridheight)]
-        #self.grid = zeros((self.gridheight, self.gridwidth), dtype=int)
-        #for x in range(len(self.grid)):
-        #    for y in range(len(self.grid[0])):
-        #        self.grid[x][y] = choice([self.valueOn, self.valueOff]) # for each cell, we choose randomly a value between self.valueOn and self.valueOff
         return self.grid
+
+    def loadGridFromFile(self, path:str):
+        #print("loadGridFromFile :", path)
+        f = open(path,'r')
+        jsondata = ''.join([e for e in f.readlines() if type(e) == str])
+        f.close()
+        d_in = json.loads(jsondata)
+        self.valueOff   = d_in['grid_data']['valueOff']
+        self.valueOn    = d_in['grid_data']['valueOn']
+        self.grid       = d_in['grid_data']['grid'].copy()
+        self.gridheight = len(self.grid)
+        self.gridwidth  = len(self.grid[0])
+
+
+    def saveGridToFile(self, path:str):
+        #print("saveGridToFile :", path)
+        if not path.endswith(".casgrid"):
+            path += ".casgrid"
+        jsondata = """{\n\t"grid_data": {\n\t\t"name": "Example Grid",\n\t\t"valueOff": """ + str(self.valueOff) + """,\n\t\t"valueOn": """ + str(self.valueOn) + """,\n\t\t"grid":""" + str(self.grid) + """\n\t}\n}"""
+        f = open(path,'w+')
+        f.write(jsondata)
+        f.close()
+
 
 
     # *----------------------------GET--SET------------------------------------*

@@ -33,7 +33,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
     def timerTimeoutEvent(self):
         self.__curentIcoId = (self.__curentIcoId + 1)%4
         self.setWindowIcon(QIcon('lib/meta/anim_ico_' + str(self.__curentIcoId) + '.png'))
-        self.ceausi_canvas.updateGridEvent()
+        self.ceausi_canvas.updateGrid()
 
     def _initUI(self):
         self.setWindowTitle(self.title + " - [PAUSED]")
@@ -48,7 +48,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
     def _initMenus(self):
         mainMenu        = self.menuBar()
         appMenu         = mainMenu.addMenu('Ceausi')
-        fileMenu        = mainMenu.addMenu('File')
+        #fileMenu        = mainMenu.addMenu('File')
         simulationMenu  = mainMenu.addMenu('Simulation')
         settingsMenu    = mainMenu.addMenu('Settings')
         helpMenu        = mainMenu.addMenu('Help')
@@ -61,15 +61,22 @@ class CellularAutomataSimulatorApp(QMainWindow):
         appMenu.addAction(exitButton)
 
         #fileMenu buttons
-        openFileButton = QAction('Open File', self)
-        openFileButton.setShortcut('Ctrl + O')
-        openFileButton.triggered.connect(self.start_OpenFileWindow)
-        fileMenu.addAction(openFileButton)
+        #openFileButton = QAction('Open File', self)
+        #openFileButton.setShortcut('Ctrl + O')
+        #openFileButton.triggered.connect(self.start_OpenFileWindow)
+        #fileMenu.addAction(openFileButton)
 
         #simulationMenu buttons
-        rulesButton = QAction('Rules', self)
+        rulesButton = QAction('Manage rules', self)
         rulesButton.triggered.connect(self.start_RulesWindow)
         simulationMenu.addAction(rulesButton)
+        simulationMenu.addSeparator()
+        openGridFileButton = QAction('Open Grid File', self)
+        openGridFileButton.triggered.connect(self.start_openGridFileWindow)
+        simulationMenu.addAction(openGridFileButton)
+        saveGridFileButton = QAction('Save Grid File', self)
+        saveGridFileButton.triggered.connect(self.start_saveGridFileWindow)
+        simulationMenu.addAction(saveGridFileButton)
 
         #settingsMenu buttons
         settingsButton = QAction('Settings', self)
@@ -97,7 +104,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.ceausi_canvas  = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
         self.setCentralWidget(self.ceausi_canvas)
         self.timer          = QTimer()
-        self.timer.timeout.connect(self.ceausi_canvas.updateGridEvent)
+        self.timer.timeout.connect(self.ceausi_canvas.updateGrid)
         self.show()
 
     def keyPressEvent(self, event):
@@ -111,6 +118,8 @@ class CellularAutomataSimulatorApp(QMainWindow):
                 self.timer_state = True
                 self.timer.start(self.timer_period)
                 self.setWindowTitle(self.title)
+        elif event.key() == Qt.Key_N:
+            self.timerTimeoutEvent()
         elif event.key() == Qt.Key_Escape:
             self.close()
         elif event.key() == Qt.Key_R:
@@ -119,13 +128,25 @@ class CellularAutomataSimulatorApp(QMainWindow):
             self.ceausi_canvas.cleargrid()
 
 # *------------------------------Windows Handlers----------------------------- *
+
+    def start_openGridFileWindow(self):
+        self.timer.stop()
+        self.timer_state = False
+        self.setWindowTitle(self.title + " - [PAUSED]")
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        self.ceausi_canvas.openGridFileDialog()
+        self.ceausi_canvas.update()
+
+    def start_saveGridFileWindow(self):
+        self.timer.stop()
+        self.timer_state = False
+        self.setWindowTitle(self.title + " - [PAUSED]")
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        self.ceausi_canvas.saveGridFileDialog()
+
     def start_RulesWindow(self):
         self.wRulesWindow = RulesWindow(self)
         self.wRulesWindow.show()
-
-    def start_OpenFileWindow(self):
-        self.wOpenFileWindow = OpenFileWindow(self)
-        self.wOpenFileWindow.show()
 
     def start_AboutWindow(self):
         self.wAboutWindow = AboutWindow(self)
