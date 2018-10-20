@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from lib.ConwaysCanvas import *
+from lib.ui.widgets.ConwaysCanvas import *
 
 class ConwaysApp(QMainWindow):
     """docstring for ConwaysApp."""
@@ -30,7 +30,7 @@ class ConwaysApp(QMainWindow):
 
     def _initUI(self):
         self.setWindowTitle(self.title + " - [PAUSED]")
-        self.setWindowIcon(QIcon('lib/ico.png'))
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
         self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
@@ -41,27 +41,27 @@ class ConwaysApp(QMainWindow):
     def _initMenus(self):
         mainMenu      = self.menuBar()
         appMenu       = mainMenu.addMenu('Conway')
-        fileMenu      = mainMenu.addMenu('File')
-        settingsMenu  = mainMenu.addMenu('Settings')
+        #fileMenu      = mainMenu.addMenu('File')
+        #settingsMenu  = mainMenu.addMenu('Settings')
         helpMenu      = mainMenu.addMenu('Help')
 
         #appMenu buttons
         exitButton = QAction('Exit', self)
-        exitButton.setShortcut('Ctrl + Q')
+        exitButton.setShortcut('Ctrl+Q')
         exitButton.setStatusTip('Exit application')
         exitButton.triggered.connect(self.close)
         appMenu.addAction(exitButton)
 
         #fileMenu buttons
-        openFileButton = QAction('Open File', self)
-        openFileButton.setShortcut('Ctrl + O')
-        openFileButton.triggered.connect(self.start_OpenFileWindow)
-        fileMenu.addAction(openFileButton)
+        #openFileButton = QAction('Open File', self)
+        #openFileButton.setShortcut('Ctrl + O')
+        #openFileButton.triggered.connect(self.start_OpenFileWindow)
+        #fileMenu.addAction(openFileButton)
 
         #settingsMenu buttons
-        viewButton = QAction('Settings', self)
-        viewButton.triggered.connect(self.close)
-        settingsMenu.addAction(exitButton)
+        #viewButton = QAction('Settings', self)
+        #viewButton.triggered.connect(self.close)
+        #settingsMenu.addAction(exitButton)
 
         #helpMenu buttons
         aboutButton = QAction('About', self)

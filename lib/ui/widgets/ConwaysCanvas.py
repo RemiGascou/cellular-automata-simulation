@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 from numpy import array, zeros
 from random import choice
 
-from lib.ConwaysGrid import *
+from lib.core.ConwaysGrid import *
 
 class ConwaysCanvas(QWidget):
     def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
