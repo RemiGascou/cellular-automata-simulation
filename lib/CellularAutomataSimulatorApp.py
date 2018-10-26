@@ -16,7 +16,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.title        = CellularAutomataSimulatorAppInfos.get_name() + " - " + CellularAutomataSimulatorAppInfos.get_versiontag()
         self.gridwidth    = gridwidth
         self.gridheight   = gridheight
-        self.cellsize     = 25
+        self.cellsize     = 12
         self.margin_left  = 200
         self.margin_top   = 200
         self.width        = self.gridwidth*self.cellsize
@@ -118,7 +118,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
                 self.timer_state = True
                 self.timer.start(self.timer_period)
                 self.setWindowTitle(self.title)
-        elif event.key() == Qt.Key_N:
+        elif event.key() == Qt.Key_N and self.timer_state == False:
             self.timerTimeoutEvent()
         elif event.key() == Qt.Key_Escape:
             self.close()
@@ -184,5 +184,4 @@ class CellularAutomataSimulatorApp(QMainWindow):
 
 if __name__ == """__main__""":
     app = QApplication(sys.argv)
-    ex = CellularAutomataSimulatorApp(38,20) #76,40
-    sys.exit(app.exec_())
+    ex = CellularAutomataSimulatorApp(int(76*1.25),int(40*1.25))

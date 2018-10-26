@@ -1,12 +1,13 @@
+# -*- coding: utf-8 -*-
 
-def get_name() -> str:
+def get_name():
     return "Cellular Automata Simulator"
 
-def get_versiontag() -> str:
+def get_versiontag():
     return "v.1.0"
 
-def get_versionname() -> str:
+def get_versionname():
     return "..."
 
-def get_credits() -> str:
+def get_credits():
     return "© Rémi GASCOU & Bastien ANTOINE - 2018"

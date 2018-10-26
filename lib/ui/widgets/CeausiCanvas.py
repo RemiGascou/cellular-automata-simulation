@@ -52,7 +52,7 @@ class CeausiCanvas(QWidget):
                         qp.setBrush(QColor(self.colorOn[0], self.colorOn[1], self.colorOn[2]))
                     else :
                         qp.setBrush(QColor(self.colorOff[0], self.colorOff[1], self.colorOff[2]))
-                    qp.drawRect(self.cellsize*xk, self.cellsize*yk, self.cellsize*(xk+1), self.cellsize*(yk+1))
+                    qp.drawRect(self.cellsize*xk, self.cellsize*yk, self.cellsize, self.cellsize)
 
     def __drawSquare(self): #Problem
         if self.__begSquare != self.__endSquare and self.__begSquare[0] != -1 and self.__begSquare[1] != -1 and self.__endSquare[0] != -1 and self.__endSquare[1] != -1:

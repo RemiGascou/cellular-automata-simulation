@@ -1,4 +1,12 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+"""
+CellularAutomataSimlator -> CeausiGrid
+
+Author: Remi GASCOU
+Last edited: October 201
+"""
 
 import json
 from numpy import array, zeros
@@ -116,7 +124,7 @@ class CeausiGrid(object):
         self.grid = [[choice([self.valueOn, self.valueOff]) for xk in range(self.gridwidth)] for yk in range(self.gridheight)]
         return self.grid
 
-    def loadGridFromFile(self, path:str):
+    def loadGridFromFile(self, path):
         #print("loadGridFromFile :", path)
         f = open(path,'r')
         jsondata = ''.join([e for e in f.readlines() if type(e) == str])
@@ -129,7 +137,7 @@ class CeausiGrid(object):
         self.gridwidth  = len(self.grid[0])
 
 
-    def saveGridToFile(self, path:str):
+    def saveGridToFile(self, path):
         #print("saveGridToFile :", path)
         if not path.endswith(".casgrid"):
             path += ".casgrid"

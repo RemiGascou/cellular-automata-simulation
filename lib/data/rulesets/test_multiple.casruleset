@@ -1,0 +1,27 @@
+{
+    "ruleset": {
+        "name": "Example Rules Set",
+		"rules": {
+            "rule": {
+                "name": "Test rule 1",
+                "setup": [[0,0,0],[0,0],[0,0,0]],
+				"outcome": "1"
+            },
+            "rule": {
+                "name": "Test rule 2",
+                "setup": [[0,0,0],[1,1],[0,0,0]],
+				"outcome": "1"
+            },
+            "rule": {
+                "name": "Test rule 3",
+                "setup": [[0,1,0],[0,0],[0,1,0]],
+				"outcome": "1"
+            },
+            "rule": {
+                "name": "Test rule 4",
+                "setup": [[0,0,0],[0,0],[0,0,0]],
+				"outcome": "1"
+            }
+        }
+    }
+}
