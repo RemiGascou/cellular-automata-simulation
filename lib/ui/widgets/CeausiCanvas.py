@@ -31,7 +31,7 @@ class CeausiCanvas(QWidget):
         self.__oldmouseMovePos_y = -1
         self.__begSquare         = [-1,-1]
         self.__endSquare         = [-1,-1]
-        self._drawMode           = 1
+        self.__drawSquareMode    = 0
 
     def regen(self):
         self.ceausi_grid.regen()
@@ -75,31 +75,32 @@ class CeausiCanvas(QWidget):
 
     def mousePressEvent(self, event):
         if event.buttons() == Qt.RightButton:
-            self.__begSquare = [max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
+            self.__drawSquareMode = 1
+            self.__begSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
         elif event.buttons() == Qt.LeftButton:
-            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)
-            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)
-            self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
+            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)
+            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)
+            self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
             self.update()
 
     def mouseReleaseEvent(self, event):
-        if event.buttons() == Qt.RightButton:
-            self.__endSquare = [max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
-            print('Drawing Square between', self.__begSquare, self.__endSquare)
-            self.ceausi_grid.__drawSquare(self.__begSquare, self.__endSquare, 0, drawplain=True)
+        if self.__drawSquareMode == 1:
+            self.__endSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
+            #print('Drawing Square between', self.__begSquare, self.__endSquare)
+            self.ceausi_grid.drawSquare(self.__begSquare, self.__endSquare, 1, drawplain=False)
             self.__begSquare, self.__endSquare = [-1,-1], [-1,-1]
+            self.__drawSquareMode = 0
             self.update()
 
     def mouseMoveEvent(self, event):
         if event.buttons() == Qt.LeftButton:
-            if self.__oldmouseMovePos_x != max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0) or self.__oldmouseMovePos_y != max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0) :
-                self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
+            if self.__oldmouseMovePos_x != max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0) or self.__oldmouseMovePos_y != max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0) :
+                self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
                 self.update()
-            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)
-            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)
-        if event.buttons() == Qt.NoButton:
-            self.__mouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)
-            self.__mouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)
+            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)
+            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)
+        elif event.buttons() == Qt.RightButton:
+            pass
 
 
     # *------------------------openFileNameDialog------------------------------*
@@ -166,18 +167,6 @@ class CeausiCanvas(QWidget):
 
     def set_grid (self, grid):
         self.ceausi_grid.grid = grid
-
-    def get_gridheight (self):
-        return self.ceausi_grid.gridheight
-
-    def set_gridheight (self, gridheight):
-        self.ceausi_grid.gridheight = max(0,gridheight)
-
-    def get_gridwidth (self):
-        return self.ceausi_grid.gridwidth
-
-    def set_gridwidth (self, gridwidth):
-        self.ceausi_grid.gridwidth = max(0,gridwidth)
 
     def get_mode (self):
         return self.mode

@@ -13,13 +13,9 @@ from numpy import array, zeros
 from random import choice
 
 class CeausiGrid(object):
-    def __init__(self, settings, cellsize=20, gridx=10, gridy=10, parent=None):
+    def __init__(self, settings, parent=None):
         super(CeausiGrid, self).__init__()
-        self.gridheight = gridx
-        self.gridwidth  = gridy
         self.settings   = settings
-        self.valueOn    = 1
-        self.valueOff   = 0
         self.grid       = []
         self.cleargrid()
 
@@ -27,7 +23,9 @@ class CeausiGrid(object):
         self.grid       = self._generateRandomgrid()
 
     def cleargrid(self):
-        self.grid       = [[self.valueOff]*self.gridwidth]*self.gridheight
+        self.grid.clear()
+        for _ in range(self.settings.get_gridheight()):
+            self.grid.append([self.settings.get_valueCellOff() for k in range(self.settings.get_gridwidth())])
         self.applyRules()
 
     def updateGrid(self):
@@ -67,7 +65,7 @@ class CeausiGrid(object):
                 neighbours = {(x-1,y):self.grid[x-1][y],(x+1,y):self.grid[x+1][y],(x-1,y-1):self.grid[x-1][y-1],(x,y-1):self.grid[x][y-1],(x+1,y-1):self.grid[x+1][y-1]}
             else: # Middle
                 neighbours = {(x-1,y-1):self.grid[x-1][y-1],(x-1,y):self.grid[x-1][y],(x-1,y+1):self.grid[x-1][y+1],(x,y-1):self.grid[x][y-1],(x,y+1):self.grid[x][y+1],(x+1,y-1):self.grid[x+1][y-1],(x+1,y):self.grid[x+1][y],(x+1,y+1):self.grid[x+1][y+1]}
-        neighbours.update({(x,y):2}) # Add the value of the cell for which we look the neighbours, make sure not to use the value 2 for either self.valueOn and self.valueOff as it's used here
+        neighbours.update({(x,y):2}) # Add the value of the cell for which we look the neighbours, make sure not to use the value 2 for either self.settings.get_valueCellOn() and self.settings.get_valueCellOff() as it's used here
         return neighbours
 
     def _countNeighbours(self, x, y):
@@ -77,17 +75,17 @@ class CeausiGrid(object):
                 - self.grid : a n x m array with the values of each cell, dead or alive
                 - x : the coordinate of the cell on the x-axis
                 - y : the coordinate of the cell on the y-axis
-                - self.valueOn : the value that code the fact that a cell is on
-                - self.valueOff : the value that code the fact that a cell is off
+                - self.settings.get_valueCellOn() : the value that code the fact that a cell is on
+                - self.settings.get_valueCellOff() : the value that code the fact that a cell is off
             Return :
                 - numberOn, numberOff : the number of cells that are on and off in the neighbourhood
         """
         numberOn, numberOff = 0, 0
         neighbours = self._getNeighbours(x, y)
         for key in neighbours.keys(): # we go through all the keys in the dict, so all the coordinates of the neighbours
-            if(neighbours[key] == self.valueOn):
+            if(neighbours[key] == self.settings.get_valueCellOn()):
                 numberOn += 1
-            elif(neighbours[key] == self.valueOff):
+            elif(neighbours[key] == self.settings.get_valueCellOff()):
                 numberOff += 1
         return numberOn, numberOff
 
@@ -96,8 +94,8 @@ class CeausiGrid(object):
             Function that, for a given grid, apply the rules of the game (see below for the detail)
             Parameters :
                 - self.grid : a n x m array with the values of each cell, dead or alive
-                - self.valueOn : the value that code the fact that a cell is on
-                - self.valueOff : the value that code the fact that a cell is off
+                - self.settings.get_valueCellOn() : the value that code the fact that a cell is on
+                - self.settings.get_valueCellOff() : the value that code the fact that a cell is off
             Return :
                 - nextgrid : the self.grid updated with the rules of the game (see below for the detail)
             Note : the rules are the following
@@ -106,66 +104,63 @@ class CeausiGrid(object):
                 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
                 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
         """
-        nextgrid = [[self.valueOff for y in range(len(self.grid[0]))] for x in range(len(self.grid))]
+        nextgrid = [[self.settings.get_valueCellOff() for y in range(len(self.grid[0]))] for x in range(len(self.grid))]
         for x in range(len(self.grid)): # we go through all the point on the x-axis
             for y in range(len(self.grid[0])): # we go through all the point on the y-axis
                 numberOn, numberOff = self._countNeighbours(x, y)
-                if(self.grid[x][y] == self.valueOn): # For the rules 1, 2 and 3
+                if(self.grid[x][y] == self.settings.get_valueCellOn()): # For the rules 1, 2 and 3
                     if(numberOn < 2): # For the rule 1
-                        nextgrid[x][y] = self.valueOff
+                        nextgrid[x][y] = self.settings.get_valueCellOff()
                     elif(numberOn == 2 or numberOn == 3): # For the rule 2
-                        nextgrid[x][y] = self.valueOn
+                        nextgrid[x][y] = self.settings.get_valueCellOn()
                     elif(numberOn > 3): # For the rule 3
-                        nextgrid[x][y] = self.valueOff
-                elif(self.grid[x][y] == self.valueOff and numberOn == 3): # For the rule 4
-                    nextgrid[x][y] = self.valueOn
+                        nextgrid[x][y] = self.settings.get_valueCellOff()
+                elif(self.grid[x][y] == self.settings.get_valueCellOff() and numberOn == 3): # For the rule 4
+                    nextgrid[x][y] = self.settings.get_valueCellOn()
         self.grid = nextgrid
 
     def _generateRandomgrid(self):
-        self.grid = [[choice([self.valueOn, self.valueOff]) for xk in range(self.gridwidth)] for yk in range(self.gridheight)]
+        self.grid = [[choice([self.settings.get_valueCellOn(), self.settings.get_valueCellOff()]) for xk in range(self.settings.get_gridwidth())] for yk in range(self.settings.get_gridheight())]
         return self.grid
 
 # *------------------------------- Utils --------------------------------------*
 
-def __drawSquare(self, nodeA, nodeB, value, drawplain=False):
-    if nodeA != nodeB and nodeA[0] != -1 and nodeA[1] != -1 and nodeB[0] != -1 and nodeB[1] != -1:
-        print(nodeA[0]-nodeB[0], nodeA[1]-nodeB[1])
-
-        if nodeA[0]-nodeB[0] > 0: nodeA[0], nodeB[0] = nodeB[0], nodeA[0]
-        if nodeA[1]-nodeB[1] > 0: nodeA[1], nodeB[1] = nodeB[1], nodeA[1]
-
-        if drawplain == False:
-            diffx, diffy = abs(nodeA[0]-nodeB[0]), abs(nodeA[1]-nodeB[1])
-            if nodeA[0] != nodeB[0] and nodeA[1] == nodeB[1]:
-                for xk in range(diffx+1):
-                    self.grid[nodeA[0] + xk][nodeA[1]] = value
-                    self.grid[nodeB[0] + xk][nodeB[1]] = value
-            elif nodeA[0] == nodeB[0] and nodeA[1] != nodeB[1]:
-                for yk in range(diffy+1):
-                    self.grid[nodeA[0]][nodeA[1] + yk] = value
-                    self.grid[nodeB[0]][nodeB[1] + yk] = value
-            else :
-                for xk in range(diffx+1):
-                    self.grid[nodeA[0] + xk][nodeA[1]] = value
-                    self.grid[nodeB[0] - xk][nodeB[1]] = value
-                for yk in range(diffy+1):
-                    self.grid[nodeA[0]][nodeA[1] + yk] = value
-                    self.grid[nodeB[0]][nodeB[1] - yk] = value
-        elif drawplain == True:
-            diffx, diffy = abs(nodeA[0]-nodeB[0]), abs(nodeA[1]-nodeB[1])
-            if nodeA[0] != nodeB[0] and nodeA[1] == nodeB[1]:
-                for xk in range(diffx+1):
-                    self.grid[nodeA[0] + xk][nodeA[1]] = value
-                    self.grid[nodeB[0] + xk][nodeB[1]] = value
-            elif nodeA[0] == nodeB[0] and nodeA[1] != nodeB[1]:
-                for yk in range(diffy+1):
-                    self.grid[nodeA[0]][nodeA[1] + yk] = value
-                    self.grid[nodeB[0]][nodeB[1] + yk] = value
-            else :
-                for yk in range(diffy+1):
+    def drawSquare(self, nodeA, nodeB, value, drawplain=False):
+        if nodeA != nodeB and nodeA[0] != -1 and nodeA[1] != -1 and nodeB[0] != -1 and nodeB[1] != -1:
+            if nodeA[0]-nodeB[0] > 0: nodeA[0], nodeB[0] = nodeB[0], nodeA[0]
+            if nodeA[1]-nodeB[1] > 0: nodeA[1], nodeB[1] = nodeB[1], nodeA[1]
+            if drawplain == False:
+                diffx, diffy = abs(nodeA[0]-nodeB[0]), abs(nodeA[1]-nodeB[1])
+                if nodeA[0] != nodeB[0] and nodeA[1] == nodeB[1]:
                     for xk in range(diffx+1):
-                        self.grid[nodeA[0] + xk][nodeA[1] + yk] = value
-                        self.grid[nodeB[0] - xk][nodeB[1] - yk] = value
+                        self.grid[nodeA[0] + xk][nodeA[1]] = value
+                        self.grid[nodeB[0] + xk][nodeB[1]] = value
+                elif nodeA[0] == nodeB[0] and nodeA[1] != nodeB[1]:
+                    for yk in range(diffy+1):
+                        self.grid[nodeA[0]][nodeA[1] + yk] = value
+                        self.grid[nodeB[0]][nodeB[1] + yk] = value
+                else :
+                    for xk in range(diffx+1):
+                        self.grid[nodeA[0] + xk][nodeA[1]] = value
+                        self.grid[nodeB[0] - xk][nodeB[1]] = value
+                    for yk in range(diffy+1):
+                        self.grid[nodeA[0]][nodeA[1] + yk] = value
+                        self.grid[nodeB[0]][nodeB[1] - yk] = value
+            elif drawplain == True:
+                diffx, diffy = abs(nodeA[0]-nodeB[0]), abs(nodeA[1]-nodeB[1])
+                if nodeA[0] != nodeB[0] and nodeA[1] == nodeB[1]:
+                    for xk in range(diffx+1):
+                        self.grid[nodeA[0] + xk][nodeA[1]] = value
+                        self.grid[nodeB[0] + xk][nodeB[1]] = value
+                elif nodeA[0] == nodeB[0] and nodeA[1] != nodeB[1]:
+                    for yk in range(diffy+1):
+                        self.grid[nodeA[0]][nodeA[1] + yk] = value
+                        self.grid[nodeB[0]][nodeB[1] + yk] = value
+                else :
+                    for yk in range(diffy+1):
+                        for xk in range(diffx+1):
+                            self.grid[nodeA[0] + xk][nodeA[1] + yk] = value
+                            self.grid[nodeB[0] - xk][nodeB[1] - yk] = value
 
 
 # *------------------------------- Files --------------------------------------*
@@ -177,18 +172,18 @@ def __drawSquare(self, nodeA, nodeB, value, drawplain=False):
         jsondata = ''.join([e for e in f.readlines() if type(e) == str])
         f.close()
         d_in = json.loads(jsondata)
-        self.valueOff   = d_in['grid_data']['valueOff']
-        self.valueOn    = d_in['grid_data']['valueOn']
+        self.settings.set_valueCellOff(d_in['grid_data']['valueOff'])
+        self.settings.set_valueCellOn(d_in['grid_data']['valueOn'])
+        self.settings.set_gridheight(len(self.grid))
+        self.settings.set_gridwidth(len(self.grid[0]))
         self.grid       = d_in['grid_data']['grid'].copy()
-        self.gridheight = len(self.grid)
-        self.gridwidth  = len(self.grid[0])
 
 
     def saveGridToFile(self, path):
         #print("saveGridToFile :", path)
         if not path.endswith(".casgrid"):
             path += ".casgrid"
-        jsondata = """{\n\t"grid_data": {\n\t\t"name": "Example Grid",\n\t\t"valueOff": """ + str(self.valueOff) + """,\n\t\t"valueOn": """ + str(self.valueOn) + """,\n\t\t"grid":""" + str(self.grid) + """\n\t}\n}"""
+        jsondata = """{\n\t"grid_data": {\n\t\t"name": "Example Grid",\n\t\t"valueOff": """ + str(self.settings.get_valueCellOff()) + """,\n\t\t"valueOn": """ + str(self.settings.get_valueCellOn()) + """,\n\t\t"grid":""" + str(self.grid) + """\n\t}\n}"""
         f = open(path,'w+')
         f.write(jsondata)
         f.close()
@@ -196,17 +191,6 @@ def __drawSquare(self, nodeA, nodeB, value, drawplain=False):
 
 
     # *----------------------------GET--SET------------------------------------*
-    def get_valueOn (self):
-        return self.valueOn
-
-    def set_valueOn (self, valueOn):
-        self.valueOn = valueOn
-
-    def get_valueOff (self):
-        return self.valueOff
-
-    def set_valueOff (self, valueOff):
-        self.valueOff = valueOff
 
     def get_grid (self):
         return self.grid

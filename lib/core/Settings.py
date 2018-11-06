@@ -23,8 +23,8 @@ class Settings(object):
         self.gridwidth          = 0
         #Colors
         self.colorGridLine      = [175,175,175]
-        self.colorCellOn        = [255,255,255]
-        self.colorCellOff       = [0,0,0]
+        self.colorCellOn        = [100,100,100]
+        self.colorCellOff       = [255,255,255]
         self.colorCellOverlay   = [255,100,100]
 
 # *----------------------------------Get Set------------------------[Values]-- *
