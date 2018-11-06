@@ -5,7 +5,7 @@
 CellularAutomataSimlator -> CeausiGrid
 
 Author: Remi GASCOU
-Last edited: October 201
+Last edited: November 2018
 """
 
 import json
@@ -17,8 +17,8 @@ class CeausiGrid(object):
         super(CeausiGrid, self).__init__()
         self.gridheight = gridx
         self.gridwidth  = gridy
-        self.valueOn    = 0
-        self.valueOff   = 1
+        self.valueOn    = 1
+        self.valueOff   = 0
         self.grid       = []
         self.cleargrid()
 

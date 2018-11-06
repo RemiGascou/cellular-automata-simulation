@@ -1,4 +1,12 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+"""
+CellularAutomataSimlator -> CellularAutomataSimulatorApp
+
+Author: Remi GASCOU
+Last edited: November 2018
+"""
 
 import os, sys
 
@@ -48,7 +56,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
     def _initMenus(self):
         mainMenu        = self.menuBar()
         appMenu         = mainMenu.addMenu('Ceausi')
-        #fileMenu        = mainMenu.addMenu('File')
+        editMenu        = mainMenu.addMenu('Edit')
         simulationMenu  = mainMenu.addMenu('Simulation')
         settingsMenu    = mainMenu.addMenu('Settings')
         helpMenu        = mainMenu.addMenu('Help')
@@ -65,6 +73,34 @@ class CellularAutomataSimulatorApp(QMainWindow):
         #openFileButton.setShortcut('Ctrl + O')
         #openFileButton.triggered.connect(self.start_OpenFileWindow)
         #fileMenu.addAction(openFileButton)
+
+        #editMenu buttons
+        loadxorElemButton = QAction('Load XOR element', self)
+        loadxorElemButton.triggered.connect(self.start_openElemFileWindow)
+        editMenu.addAction(loadxorElemButton)
+        loadElemButton = QAction('Load element', self)
+        loadElemButton.triggered.connect(self.start_openElemFileWindow)
+        editMenu.addAction(loadElemButton)
+        saveElemButton = QAction('Save element', self)
+        saveElemButton.triggered.connect(self.start_openElemFileWindow)
+        editMenu.addAction(saveElemButton)
+        editMenu.addSeparator()
+        copyZoneButton = QAction('Copy', self)
+        copyZoneButton.setShortcut('Ctrl + C')
+        copyZoneButton.triggered.connect(self.start_none)
+        editMenu.addAction(copyZoneButton)
+        pasteZoneButton = QAction('Paste', self)
+        pasteZoneButton.setShortcut('Ctrl + V')
+        pasteZoneButton.triggered.connect(self.start_none)
+        editMenu.addAction(pasteZoneButton)
+        cutZoneButton = QAction('Cut', self)
+        cutZoneButton.setShortcut('Ctrl + X')
+        cutZoneButton.triggered.connect(self.start_none)
+        editMenu.addAction(cutZoneButton)
+        clearZoneButton = QAction('Clear', self)
+        clearZoneButton.setShortcut('Ctrl + Space')
+        clearZoneButton.triggered.connect(self.start_none)
+        editMenu.addAction(clearZoneButton)
 
         #simulationMenu buttons
         rulesButton = QAction('Manage rules', self)
@@ -91,6 +127,9 @@ class CellularAutomataSimulatorApp(QMainWindow):
         debugButton = QAction('Debug', self)
         debugButton.triggered.connect(self.start_DebugWindow)
         helpMenu.addAction(debugButton)
+        testButton = QAction('Test checkbox', self, checkable=True)
+        testButton.changed.connect(self.start_none)
+        helpMenu.addAction(testButton)
 
     def _updateUI(self):
         self.timer.stop()
@@ -128,6 +167,30 @@ class CellularAutomataSimulatorApp(QMainWindow):
             self.ceausi_canvas.cleargrid()
 
 # *------------------------------Windows Handlers----------------------------- *
+
+    def errorHandler(f_in, f_win, errortitle, errormessage):
+        errcode = f_in()
+        if (errcode == 0):
+            f_win()
+        else:
+            e = ErrorWindow("Error", "", errcode)
+
+    def start_none(self):
+        print("start_none")
+        pass
+
+    def start_openElemFileWindow(self):
+        self.timer.stop()
+        self.timer_state = False
+        self.setWindowTitle(self.title + " - [PAUSED]")
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        errorHandler(
+            self.ceausi_canvas.openElemFileDialog,
+            self.ceausi_canvas.update,
+            "FileError",
+            "Could not open file."
+        )
+
 
     def start_openGridFileWindow(self):
         self.timer.stop()

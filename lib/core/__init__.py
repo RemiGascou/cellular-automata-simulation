@@ -4,6 +4,6 @@ __all__ = [
     "CellularAutomataSimulatorAppInfos"
 ]
 
-from lib.core.ImportExportGrid import *
 from lib.core.CeausiGrid import *
-from lib.core.CellularAutomataSimulatorAppInfos import *
+from lib.core.CeausiElement import *
+from lib.core.Settings import *

@@ -25,7 +25,6 @@ class RuleBoxWidget(QWidget):
         self.gridin     = gridin
         self.gridout    = gridout
         self._initUI()
-        self.show()
 
     def _initUI(self):
         self.layout = QGridLayout()
@@ -36,7 +35,7 @@ class RuleBoxWidget(QWidget):
         self.cellNeighborsOut = RuleCellNeighborsWidget(self.gridout, self)
         self.layout.addWidget(self.cellNeighborsOut, 0, 2)
         self.setLayout(self.layout)
-        self._loadStyleSheet()
+        #self._loadStyleSheet()
 
     def _loadStyleSheet(self, path="lib/ui/widgets/styles/RuleBoxWidget.css"):
         f = open(path,'r')

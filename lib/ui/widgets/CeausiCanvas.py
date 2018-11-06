@@ -1,10 +1,19 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+"""
+CellularAutomataSimlator -> CeausiCanvas
+
+Author: Remi GASCOU
+Last edited: October 201
+"""
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 from lib.core.CeausiGrid import *
+from lib.core.CeausiElement import *
 
 class CeausiCanvas(QWidget):
     def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
@@ -13,9 +22,10 @@ class CeausiCanvas(QWidget):
         self.colorLine  = [175,175,175]
         self.colorOn    = [100,100,255]
         self.colorOff   = [255,255,255]
-        self.valueOn      = 0
-        self.valueOff     = 1
-        self.ceausi_grid  = CeausiGrid()
+        self.valueOn    = 1
+        self.valueOff   = 0
+        self.ceausi_element = CeausiElement()
+        self.ceausi_grid    = CeausiGrid()
         self.ceausi_grid.gridheight = gridx
         self.ceausi_grid.gridwidth  = gridy
         self.ceausi_grid.cleargrid()
@@ -117,8 +127,35 @@ class CeausiCanvas(QWidget):
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self,"Save Grid","","Ceausi Grid Files (*.casgrid)", options=options)
         if fileName:
-            self.ceausi_grid.saveGridToFile(fileName)
+            errcode = self.ceausi_grid.saveGridToFile(fileName)
+            if errcode == 0:
+                return -1
+            else :
+                return errcode
+        else:
+            return -1
 
+    def openElemFileDialog(self):
+        self.ceausi_element = CeausiElement()
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"Open Element File", "","Ceausi Element Files (*.caselem)", options=options)
+        if fileName:
+            errcode = self.ceausi_element.loadElemFromFile(fileName)
+            if errcode == 0:
+                return 0
+            else :
+                return errcode
+        else:
+            return -1
+
+    def saveElemFileDialog(self):
+        self.ceausi_element = CeausiElement()
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self,"Save Element","","Ceausi Element Files (*.caselem)", options=options)
+        if fileName:
+            self.ceausi_element.saveGridToFile(fileName)
 
 
     # *----------------------------GET--SET------------------------------------*
@@ -169,3 +206,9 @@ class CeausiCanvas(QWidget):
 
     def set_cellsize (self, cellsize):
         self.cellsize = max(0,cellsize)
+
+    def get_mode (self):
+        return self.mode
+
+    def set_mode (self, mode):
+        self.mode = max(0, min(mode, 1))

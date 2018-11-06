@@ -33,7 +33,7 @@ class RuleCellNeighborsWidget(QWidget):
         self.colorBlocked = [175,175,175]
         self.valueOn      = 1
         self.valueOff     = 0
-        self.show()
+        #self.show()
 
     def paintEvent(self, e):
         qp = QPainter(self)

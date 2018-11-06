@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-CellularAutomataSimulatorApp -> EditRuleWindow
+CellularAutomataSimulatorApp -> SettingsWindow
 
 Author: Remi GASCOU
 Last edited: October 2018
@@ -15,15 +15,15 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 
-class EditRuleWindow(QWidget):
+class SettingsWindow(QWidget):
     def __init__(self, parent=None):
-        print("[LOG] Parent of EditRuleWindow", parent)
-        super(EditRuleWindow, self).__init__()
-        self.title = 'EditRuleWindow'
+        print("[LOG] Parent of SettingsWindow", parent)
+        super(SettingsWindow, self).__init__()
+        self.title = 'Settings'
         self.left   = 0
         self.top    = 0
-        self.width  = 460
-        self.height = 500
+        self.width  = 300
+        self.height = 200
         self.setWindowTitle(self.title)
         self.setAttribute(Qt.WA_DeleteOnClose)  #Kill application on close
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -38,10 +38,9 @@ class EditRuleWindow(QWidget):
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0)
         self.setLayout(self.layout)
-        self.setGeometry(300, 300, self.width, self.height)
-        self.setFixedSize(self.size())
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = EditRuleWindow()
+    ex = SettingsWindow()
     sys.exit(app.exec_())
