@@ -5,7 +5,7 @@
 CellularAutomataSimlator -> CeausiCanvas
 
 Author: Remi GASCOU
-Last edited: October 201
+Last edited: November 2018
 """
 
 from PyQt5.QtWidgets import *
@@ -13,23 +13,20 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 from lib.core.CeausiGrid import *
+from lib.core.CeausiGridOverlay import *
 from lib.core.CeausiElement import *
 
 class CeausiCanvas(QWidget):
-    def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
+    def __init__(self, settings, parent=None):
         super(CeausiCanvas, self).__init__()
-        self.cellsize   = cellsize
-        self.colorLine  = [175,175,175]
-        self.colorOn    = [100,100,255]
-        self.colorOff   = [255,255,255]
-        self.valueOn    = 1
-        self.valueOff   = 0
+        self.settings       = settings
         self.ceausi_element = CeausiElement()
-        self.ceausi_grid    = CeausiGrid()
-        self.ceausi_grid.gridheight = gridx
-        self.ceausi_grid.gridwidth  = gridy
+        self.ceausi_grid    = CeausiGrid(self.settings)
+        self.ceausi_overlay_grid    = CeausiGridOverlay(self.settings)
         self.ceausi_grid.cleargrid()
 
+        self.__mouseMovePos_x    = -1
+        self.__mouseMovePos_y    = -1
         self.__oldmouseMovePos_x = -1
         self.__oldmouseMovePos_y = -1
         self.__begSquare         = [-1,-1]
@@ -55,62 +52,54 @@ class CeausiCanvas(QWidget):
     def paintEvent(self, e):
         if len(self.ceausi_grid.grid) != 0:
             qp = QPainter(self)
-            qp.setPen(QColor(self.colorLine[0], self.colorLine[1], self.colorLine[2]))
+            qp.setPen(self.settings.get_QColorGridLine())
             for xk in range(len(self.ceausi_grid.grid)):
                 for yk in range(len(self.ceausi_grid.grid[0])):
-                    if self.ceausi_grid.grid[xk][yk] == self.valueOn:
-                        qp.setBrush(QColor(self.colorOn[0], self.colorOn[1], self.colorOn[2]))
+                    if self.ceausi_grid.grid[xk][yk] == self.settings.get_valueCellOn():
+                        qp.setBrush(self.settings.get_QColorCellOn())
                     else :
-                        qp.setBrush(QColor(self.colorOff[0], self.colorOff[1], self.colorOff[2]))
-                    qp.drawRect(self.cellsize*xk, self.cellsize*yk, self.cellsize, self.cellsize)
+                        qp.setBrush(self.settings.get_QColorCellOff())
+                    qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
+        # if len(self.ceausi_overlay_grid.grid) != 0:
+        #     qp = QPainter(self)
+        #     qp.setPen(self.settings.get_QColorGridLine())
+        #     for xk in range(len(self.ceausi_overlay_grid.grid)):
+        #         for yk in range(len(self.ceausi_overlay_grid.grid[0])):
+        #             if self.ceausi_overlay_grid.grid[xk][yk] == self.settings.get_valueCellOn():
+        #                 qp.setBrush(self.settings.get_QColorCellOn())
+        #             else :
+        #                 qp.setBrush(self.settings.get_QColorCellOff())
+        #             qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
 
-    def __drawSquare(self): #Problem
-        if self.__begSquare != self.__endSquare and self.__begSquare[0] != -1 and self.__begSquare[1] != -1 and self.__endSquare[0] != -1 and self.__endSquare[1] != -1:
-            diffx, diffy = abs(self.__begSquare[0]-self.__endSquare[0]), abs(self.__begSquare[1]-self.__endSquare[1])
-            if self.__begSquare[0] != self.__endSquare[0] and self.__begSquare[1] == self.__endSquare[1]:
-                print('Tracé x')
-                for xk in range(diffx):
-                    self.ceausi_grid.grid[self.__begSquare[0] + xk][self.__begSquare[1]] = 1 ^ self.ceausi_grid.grid[self.__begSquare[0] + xk][self.__begSquare[1]]
-                    self.ceausi_grid.grid[self.__endSquare[0] + xk][self.__endSquare[1]] = 1 ^ self.ceausi_grid.grid[self.__endSquare[0] + xk][self.__endSquare[1]]
-            elif self.__begSquare[0] == self.__endSquare[0] and self.__begSquare[1] != self.__endSquare[1]:
-                print('Tracé y')
-                for yk in range(diffy):
-                    self.ceausi_grid.grid[self.__begSquare[0]][self.__begSquare[1] + yk] = 1 ^ self.ceausi_grid.grid[self.__begSquare[0]][self.__begSquare[1] + yk]
-                    self.ceausi_grid.grid[self.__endSquare[0]][self.__endSquare[1] + yk] = 1 ^ self.ceausi_grid.grid[self.__endSquare[0]][self.__endSquare[1] + yk]
-            else :
-                print('Tracé xy')
-                for xk in range(diffx):
-                    self.ceausi_grid.grid[self.__begSquare[0] + xk][self.__begSquare[1]] = 1 ^ self.ceausi_grid.grid[self.__begSquare[0] + xk][self.__begSquare[1]]
-                    self.ceausi_grid.grid[self.__endSquare[0] + xk][self.__endSquare[1]] = 1 ^ self.ceausi_grid.grid[self.__endSquare[0] + xk][self.__endSquare[1]]
-                for yk in range(diffy):
-                    self.ceausi_grid.grid[self.__begSquare[0]][self.__begSquare[1] + yk] = 1 ^ self.ceausi_grid.grid[self.__begSquare[0]][self.__begSquare[1] + yk]
-                    self.ceausi_grid.grid[self.__endSquare[0]][self.__endSquare[1] + yk] = 1 ^ self.ceausi_grid.grid[self.__endSquare[0]][self.__endSquare[1] + yk]
-            self.update()
+
 
     def mousePressEvent(self, event):
-        #print('mousePressEvent at :', max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0))
         if event.buttons() == Qt.RightButton:
-            self.__begSquare = [max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)]
+            self.__begSquare = [max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
         elif event.buttons() == Qt.LeftButton:
-            self.__oldmouseMovePos_x = max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0)
-            self.__oldmouseMovePos_y = max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)
-            self.ceausi_grid.grid[max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)]
+            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)
+            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)
+            self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
             self.update()
 
     def mouseReleaseEvent(self, event):
-        #print('mouseReleaseEvent')
-        #if event.buttons() == Qt.RightButton:
-        self.__endSquare = [max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)]
-        #print('Drawing Square between', self.__begSquare, self.__endSquare)
-        #self.__drawSquare()
+        if event.buttons() == Qt.RightButton:
+            self.__endSquare = [max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
+            print('Drawing Square between', self.__begSquare, self.__endSquare)
+            self.ceausi_grid.__drawSquare(self.__begSquare, self.__endSquare, 0, drawplain=True)
+            self.__begSquare, self.__endSquare = [-1,-1], [-1,-1]
+            self.update()
 
     def mouseMoveEvent(self, event):
         if event.buttons() == Qt.LeftButton:
-            if self.__oldmouseMovePos_x != max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0) or self.__oldmouseMovePos_y != max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0) :
-                self.ceausi_grid.grid[max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)]
+            if self.__oldmouseMovePos_x != max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0) or self.__oldmouseMovePos_y != max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0) :
+                self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)]
                 self.update()
-            self.__oldmouseMovePos_x = max(min(event.x()//self.cellsize, self.ceausi_grid.gridheight-1), 0)
-            self.__oldmouseMovePos_y = max(min(event.y()//self.cellsize, self.ceausi_grid.gridwidth-1), 0)
+            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)
+            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)
+        if event.buttons() == Qt.NoButton:
+            self.__mouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.ceausi_grid.gridheight-1), 0)
+            self.__mouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.ceausi_grid.gridwidth-1), 0)
 
 
     # *------------------------openFileNameDialog------------------------------*
@@ -120,7 +109,13 @@ class CeausiCanvas(QWidget):
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,"Open Grid File", "","Ceausi Grid Files (*.casgrid)", options=options)
         if fileName:
-            self.ceausi_grid.loadGridFromFile(fileName)
+            errcode = self.ceausi_grid.loadGridFromFile(fileName)
+            if errcode == 0:
+                return -1
+            else :
+                return errcode
+        else:
+            return -1
 
     def saveGridFileDialog(self):
         options = QFileDialog.Options()
@@ -155,33 +150,16 @@ class CeausiCanvas(QWidget):
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self,"Save Element","","Ceausi Element Files (*.caselem)", options=options)
         if fileName:
-            self.ceausi_element.saveGridToFile(fileName)
+            errcode = self.ceausi_element.saveElemToFile(fileName)
+            if errcode == 0:
+                return 0
+            else :
+                return errcode
+        else:
+            return -1
 
 
     # *----------------------------GET--SET------------------------------------*
-    def get_valueOn (self):
-        return self.valueOn
-
-    def set_valueOn (self, valueOn):
-        self.valueOn = valueOn
-
-    def get_valueOff (self):
-        return self.valueOff
-
-    def set_valueOff (self, valueOff):
-        self.valueOff = valueOff
-
-    def get_colorOn (self):
-        return self.colorOn
-
-    def set_colorOn (self, colorOn):
-        self.colorOn = colorOn
-
-    def get_colorOff (self):
-        return self.colorOff
-
-    def set_colorOff (self, colorOff):
-        self.colorOff = colorOff
 
     def get_grid (self):
         return self.ceausi_grid.grid
@@ -201,14 +179,14 @@ class CeausiCanvas(QWidget):
     def set_gridwidth (self, gridwidth):
         self.ceausi_grid.gridwidth = max(0,gridwidth)
 
-    def get_cellsize (self):
-        return self.cellsize
-
-    def set_cellsize (self, cellsize):
-        self.cellsize = max(0,cellsize)
-
     def get_mode (self):
         return self.mode
 
     def set_mode (self, mode):
         self.mode = max(0, min(mode, 1))
+
+    def get_settings (self):
+        return self.settings
+
+    def set_settings (self, settings):
+        self.settings = settings

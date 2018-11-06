@@ -18,10 +18,10 @@ class CeausiElement(object):
         self.d_valueOff     = 0
         self.d_width        = 0
         self.d_height       = 0
-        self.elementgrid    = []
-        self.centercoords   = [0,0]
-        
-    def loadFromFile(self, path):
+        self.elementgrid    = [[1,1,1],[1,1,1],[1,1,1]]
+        self.centercoords   = [1,1]
+
+    def loadElemFromFile(self, path):
         if path.endswith(".caselem"):
             f = open(path,'r')
             jsondata = ''.join([e for e in f.readlines() if type(e) == str])
@@ -38,10 +38,15 @@ class CeausiElement(object):
             return -1
 
 
-    def saveToFile(self, path):
+    def saveElemToFile(self, path):
         if not path.endswith(".casgrid"):
             path += ".casgrid"
         jsondata = """{\n\t"grid_data": {\n\t\t"name": "Example Grid",\n\t\t"valueOff": """ + str(self.valueOff) + """,\n\t\t"valueOn": """ + str(self.valueOn) + """,\n\t\t"grid":""" + str(self.grid) + """\n\t}\n}"""
         f = open(path,'w+')
         f.write(jsondata)
         f.close()
+
+# *----------------------------------Get Set---------------------------------- *
+
+    def get_centercoords (self):
+        return self.centercoords[0], self.centercoords[1]

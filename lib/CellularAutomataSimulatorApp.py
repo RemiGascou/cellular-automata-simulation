@@ -16,20 +16,21 @@ from PyQt5.QtCore import *
 
 from lib.ui import *
 from lib.core import *
+from lib.core.Settings import *
 
 class CellularAutomataSimulatorApp(QMainWindow):
     """docstring for CellularAutomataSimulatorApp."""
     def __init__(self, gridwidth=10, gridheight=10, parent=None):
         super(CellularAutomataSimulatorApp, self).__init__()
         self.title        = CellularAutomataSimulatorAppInfos.get_name() + " - " + CellularAutomataSimulatorAppInfos.get_versiontag()
-        self.gridwidth    = gridwidth
-        self.gridheight   = gridheight
-        self.cellsize     = 12
+        self.settings     = Settings()
+        self.settings.set_gridwidth(gridwidth)
+        self.settings.set_gridheight(gridheight)
+
         self.margin_left  = 200
         self.margin_top   = 200
-        self.width        = self.gridwidth*self.cellsize
-        self.height       = self.gridheight*self.cellsize-4
-        self.timer_period = 125
+        self.width        = self.settings.get_gridwidth()*self.settings.get_cellsize()
+        self.height       = self.settings.get_gridheight()*self.settings.get_cellsize()-4
         self.timer_state  = False
 
         self._initUI()
@@ -49,7 +50,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
         self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
-        self.ceausi_canvas = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
+        self.ceausi_canvas = CeausiCanvas(self.settings)
         self.setCentralWidget(self.ceausi_canvas)
         self.show()
 
@@ -135,12 +136,12 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.timer.stop()
         self.timer_state = False
         self.setWindowIcon(QIcon('lib/meta/ico.png'))
-        self.width  = self.gridwidth*self.cellsize
-        self.height = self.gridheight*self.cellsize-4
+        self.width  = self.gridwidth*self.settings.get_cellsize()
+        self.height = self.gridheight*self.settings.get_cellsize()-4
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
         self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
-        self.ceausi_canvas  = CeausiCanvas(self.cellsize, self.gridwidth, self.gridheight)
+        self.ceausi_canvas  = CeausiCanvas(self.settings.get_cellsize(), self.gridwidth, self.gridheight)
         self.setCentralWidget(self.ceausi_canvas)
         self.timer          = QTimer()
         self.timer.timeout.connect(self.ceausi_canvas.updateGrid)
@@ -155,7 +156,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
                 self.setWindowTitle(self.title +" - [PAUSED]")
             else :
                 self.timer_state = True
-                self.timer.start(self.timer_period)
+                self.timer.start(self.settings.get_timerperiod())
                 self.setWindowTitle(self.title)
         elif event.key() == Qt.Key_N and self.timer_state == False:
             self.timerTimeoutEvent()
@@ -221,11 +222,11 @@ class CellularAutomataSimulatorApp(QMainWindow):
 
 # *----------------------------------Get Set---------------------------------- *
     def get_cellsize (self):
-        return self.cellsize
+        return self.settings.get_cellsize()
 
     def set_cellsize (self, cellsize):
-        self.cellsize = max(0,cellsize)
-        self.ceausi_canvas.set_cellsize(self.cellsize)
+        self.settings.set_cellsize(max(0,cellsize))
+        self.ceausi_canvas.set_cellsize(self.settings.get_cellsize())
         self._updateUI()
 
     def get_gridwidth (self):

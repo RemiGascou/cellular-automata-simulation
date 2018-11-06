@@ -13,10 +13,11 @@ from numpy import array, zeros
 from random import choice
 
 class CeausiGrid(object):
-    def __init__(self, cellsize=20, gridx=10, gridy=10, parent=None):
+    def __init__(self, settings, cellsize=20, gridx=10, gridy=10, parent=None):
         super(CeausiGrid, self).__init__()
         self.gridheight = gridx
         self.gridwidth  = gridy
+        self.settings   = settings
         self.valueOn    = 1
         self.valueOff   = 0
         self.grid       = []
@@ -123,6 +124,52 @@ class CeausiGrid(object):
     def _generateRandomgrid(self):
         self.grid = [[choice([self.valueOn, self.valueOff]) for xk in range(self.gridwidth)] for yk in range(self.gridheight)]
         return self.grid
+
+# *------------------------------- Utils --------------------------------------*
+
+def __drawSquare(self, nodeA, nodeB, value, drawplain=False):
+    if nodeA != nodeB and nodeA[0] != -1 and nodeA[1] != -1 and nodeB[0] != -1 and nodeB[1] != -1:
+        print(nodeA[0]-nodeB[0], nodeA[1]-nodeB[1])
+
+        if nodeA[0]-nodeB[0] > 0: nodeA[0], nodeB[0] = nodeB[0], nodeA[0]
+        if nodeA[1]-nodeB[1] > 0: nodeA[1], nodeB[1] = nodeB[1], nodeA[1]
+
+        if drawplain == False:
+            diffx, diffy = abs(nodeA[0]-nodeB[0]), abs(nodeA[1]-nodeB[1])
+            if nodeA[0] != nodeB[0] and nodeA[1] == nodeB[1]:
+                for xk in range(diffx+1):
+                    self.grid[nodeA[0] + xk][nodeA[1]] = value
+                    self.grid[nodeB[0] + xk][nodeB[1]] = value
+            elif nodeA[0] == nodeB[0] and nodeA[1] != nodeB[1]:
+                for yk in range(diffy+1):
+                    self.grid[nodeA[0]][nodeA[1] + yk] = value
+                    self.grid[nodeB[0]][nodeB[1] + yk] = value
+            else :
+                for xk in range(diffx+1):
+                    self.grid[nodeA[0] + xk][nodeA[1]] = value
+                    self.grid[nodeB[0] - xk][nodeB[1]] = value
+                for yk in range(diffy+1):
+                    self.grid[nodeA[0]][nodeA[1] + yk] = value
+                    self.grid[nodeB[0]][nodeB[1] - yk] = value
+        elif drawplain == True:
+            diffx, diffy = abs(nodeA[0]-nodeB[0]), abs(nodeA[1]-nodeB[1])
+            if nodeA[0] != nodeB[0] and nodeA[1] == nodeB[1]:
+                for xk in range(diffx+1):
+                    self.grid[nodeA[0] + xk][nodeA[1]] = value
+                    self.grid[nodeB[0] + xk][nodeB[1]] = value
+            elif nodeA[0] == nodeB[0] and nodeA[1] != nodeB[1]:
+                for yk in range(diffy+1):
+                    self.grid[nodeA[0]][nodeA[1] + yk] = value
+                    self.grid[nodeB[0]][nodeB[1] + yk] = value
+            else :
+                for yk in range(diffy+1):
+                    for xk in range(diffx+1):
+                        self.grid[nodeA[0] + xk][nodeA[1] + yk] = value
+                        self.grid[nodeB[0] - xk][nodeB[1] - yk] = value
+
+
+# *------------------------------- Files --------------------------------------*
+
 
     def loadGridFromFile(self, path):
         #print("loadGridFromFile :", path)
