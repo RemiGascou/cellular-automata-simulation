@@ -21,7 +21,7 @@ class CeausiCanvas(QWidget):
         super(CeausiCanvas, self).__init__()
         self.settings       = settings
         self.ceausi_element = CeausiElement()
-        self.ceausi_grid    = CeausiGrid(self.settings)
+        self.ceausi_grid            = CeausiGrid(self.settings)
         self.ceausi_overlay_grid    = CeausiGridOverlay(self.settings)
         self.ceausi_grid.cleargrid()
 
@@ -50,56 +50,80 @@ class CeausiCanvas(QWidget):
             self.update()
 
     def paintEvent(self, e):
-        if len(self.ceausi_grid.grid) != 0:
+        if self.settings.get_currentmode() == self.settings.get_drawmodeID():
+            if len(self.ceausi_grid.grid) != 0:
+                qp = QPainter(self)
+                qp.setPen(self.settings.get_QColorGridLine())
+                for xk in range(len(self.ceausi_grid.grid)):
+                    for yk in range(len(self.ceausi_grid.grid[0])):
+                        if self.ceausi_grid.grid[xk][yk] == self.settings.get_valueCellOn():
+                            qp.setBrush(self.settings.get_QColorCellOn())
+                        else :
+                            qp.setBrush(self.settings.get_QColorCellOff())
+                        qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
+        elif self.settings.get_currentmode() == self.settings.get_selectionmodeID():
+            print("paintEvent :: selectionmode", len(self.ceausi_overlay_grid.grid))
             qp = QPainter(self)
-            qp.setPen(self.settings.get_QColorGridLine())
-            for xk in range(len(self.ceausi_grid.grid)):
-                for yk in range(len(self.ceausi_grid.grid[0])):
-                    if self.ceausi_grid.grid[xk][yk] == self.settings.get_valueCellOn():
-                        qp.setBrush(self.settings.get_QColorCellOn())
-                    else :
-                        qp.setBrush(self.settings.get_QColorCellOff())
-                    qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
-        # if len(self.ceausi_overlay_grid.grid) != 0:
-        #     qp = QPainter(self)
-        #     qp.setPen(self.settings.get_QColorGridLine())
-        #     for xk in range(len(self.ceausi_overlay_grid.grid)):
-        #         for yk in range(len(self.ceausi_overlay_grid.grid[0])):
-        #             if self.ceausi_overlay_grid.grid[xk][yk] == self.settings.get_valueCellOn():
-        #                 qp.setBrush(self.settings.get_QColorCellOn())
-        #             else :
-        #                 qp.setBrush(self.settings.get_QColorCellOff())
-        #             qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
-
+            if len(self.ceausi_grid.grid) != 0:
+                qp.setPen(self.settings.get_QColorGridLine())
+                qp.setBrush(self.settings.get_QColorCellOff())
+                for xk in range(len(self.ceausi_grid.grid)):
+                    for yk in range(len(self.ceausi_grid.grid[0])):
+                        if self.ceausi_grid.grid[xk][yk] == self.settings.get_valueCellOff():
+                            qp.setBrush(self.settings.get_QColorCellOff())
+                            qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
+            if len(self.ceausi_overlay_grid.grid) != 0:
+                for xk in range(len(self.ceausi_overlay_grid.grid)):
+                    for yk in range(len(self.ceausi_overlay_grid.grid[0])):
+                        if self.ceausi_overlay_grid.grid[xk][yk] == self.settings.get_valueCellOn():
+                            if self.ceausi_grid.grid[xk][yk] == self.settings.get_valueCellOn(): qp.setBrush(self.settings.get_QColorCellOn())
+                            else: qp.setBrush(self.settings.get_QColorCellOverlay())
+                            qp.drawRect(self.settings.get_cellsize()*xk, self.settings.get_cellsize()*yk, self.settings.get_cellsize(), self.settings.get_cellsize())
 
 
     def mousePressEvent(self, event):
-        if event.buttons() == Qt.RightButton:
-            self.__drawSquareMode = 1
-            self.__begSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
-        elif event.buttons() == Qt.LeftButton:
-            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)
-            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)
-            self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
-            self.update()
-
+        if self.settings.get_currentmode() == self.settings.get_drawmodeID():
+            if event.buttons() == Qt.RightButton:
+                self.__drawSquareMode = 1
+                self.__begSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)]
+            elif event.buttons() == Qt.LeftButton:
+                self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)
+                self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)
+                self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
+                self.update()
+        elif self.settings.get_currentmode() == self.settings.get_selectionmodeID():
+            if event.buttons() == Qt.LeftButton:
+                self.__drawSquareMode = 1
+                self.__begSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)]
     def mouseReleaseEvent(self, event):
-        if self.__drawSquareMode == 1:
-            self.__endSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
-            #print('Drawing Square between', self.__begSquare, self.__endSquare)
-            self.ceausi_grid.drawSquare(self.__begSquare, self.__endSquare, 1, drawplain=False)
-            self.__begSquare, self.__endSquare = [-1,-1], [-1,-1]
-            self.__drawSquareMode = 0
+        if self.settings.get_currentmode() == self.settings.get_drawmodeID():
+            if self.__drawSquareMode == 1:
+                self.__endSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)]
+                #print('Drawing Square between', self.__begSquare, self.__endSquare)
+                if self.__begSquare != [-1,-1] and self.__endSquare != [-1,-1]:
+                    self.ceausi_grid.drawSquare(self.__begSquare, self.__endSquare, 1, drawplain=False)
+                    self.__begSquare, self.__endSquare = [-1,-1], [-1,-1]
+                self.__drawSquareMode = 0
+                self.update()
+        elif self.settings.get_currentmode() == self.settings.get_selectionmodeID():
+            self.__endSquare = [max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0), max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)]
+            print('Selecting zone between', self.__begSquare, self.__endSquare)
+            if self.__begSquare != [-1,-1] and self.__endSquare != [-1,-1]:
+                self.ceausi_overlay_grid.drawSquare(self.__begSquare, self.__endSquare, 1, drawplain=True)
+                self.__begSquare, self.__endSquare = [-1,-1], [-1,-1]
             self.update()
 
     def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
-            if self.__oldmouseMovePos_x != max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0) or self.__oldmouseMovePos_y != max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0) :
-                self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)]
-                self.update()
-            self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)
-            self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)
-        elif event.buttons() == Qt.RightButton:
+        if self.settings.get_currentmode() == self.settings.get_drawmodeID():
+            if event.buttons() == Qt.LeftButton:
+                if self.__oldmouseMovePos_x != max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0) or self.__oldmouseMovePos_y != max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0) :
+                    self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)] = 1 ^ self.ceausi_grid.grid[max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)][max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)]
+                    self.update()
+                self.__oldmouseMovePos_x = max(min(event.x()//self.settings.get_cellsize(), self.settings.get_gridwidth()-1), 0)
+                self.__oldmouseMovePos_y = max(min(event.y()//self.settings.get_cellsize(), self.settings.get_gridheight()-1), 0)
+            elif event.buttons() == Qt.RightButton:
+                pass
+        elif self.settings.get_currentmode() == self.settings.get_selectionmodeID():
             pass
 
 

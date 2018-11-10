@@ -30,7 +30,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.margin_left  = 200
         self.margin_top   = 200
         self.width        = self.settings.get_gridwidth()*self.settings.get_cellsize()
-        self.height       = self.settings.get_gridheight()*self.settings.get_cellsize()-4
+        self.height       = self.settings.get_gridheight()*self.settings.get_cellsize()+21
         self.timer_state  = False
 
         self._initUI()
@@ -48,7 +48,7 @@ class CellularAutomataSimulatorApp(QMainWindow):
         self.setWindowTitle(self.title + " - [PAUSED]")
         self.setWindowIcon(QIcon('lib/meta/ico.png'))
         self.setGeometry(self.margin_left, self.margin_top, self.width, self.height)
-        #self.setFixedSize(self.size())
+        self.setFixedSize(self.size())
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ceausi_canvas = CeausiCanvas(self.settings)
         self.setCentralWidget(self.ceausi_canvas)
@@ -76,6 +76,23 @@ class CellularAutomataSimulatorApp(QMainWindow):
         #fileMenu.addAction(openFileButton)
 
         #editMenu buttons
+
+        #modeMenu buttons
+        modeMenu = editMenu.addMenu('Mode')
+        modeAG = QActionGroup(modeMenu, exclusive=True)
+        #
+        drawModeButton = modeAG.addAction(QAction('Draw Mode', self, checked=True, checkable=True))
+        drawModeButton.changed.connect(self.switchToDrawMode)
+        drawModeButton.toggle()
+        modeMenu.addAction(drawModeButton)
+        #
+        selectionModeButton = modeAG.addAction(QAction('Selection Mode', self, checkable=True))
+        selectionModeButton.changed.connect(self.switchToSelectionMode)
+        modeAG.addAction(selectionModeButton)
+        modeMenu.addAction(selectionModeButton)
+
+
+
         loadxorElemButton = QAction('Load XOR element', self)
         loadxorElemButton.triggered.connect(self.start_openElemFileWindow)
         editMenu.addAction(loadxorElemButton)
@@ -117,20 +134,20 @@ class CellularAutomataSimulatorApp(QMainWindow):
 
         #settingsMenu buttons
         settingsButton = QAction('Settings', self)
-        settingsButton.triggered.connect(self.close)
+        settingsButton.triggered.connect(self.start_SettingsWindow)
         settingsMenu.addAction(settingsButton)
 
         #helpMenu buttons
         aboutButton = QAction('About', self)
         aboutButton.triggered.connect(self.start_AboutWindow)
         helpMenu.addAction(aboutButton)
-        helpMenu.addSeparator()
-        debugButton = QAction('Debug', self)
-        debugButton.triggered.connect(self.start_DebugWindow)
-        helpMenu.addAction(debugButton)
-        testButton = QAction('Test checkbox', self, checkable=True)
-        testButton.changed.connect(self.start_none)
-        helpMenu.addAction(testButton)
+        # helpMenu.addSeparator()
+        # debugButton = QAction('Debug', self)
+        # debugButton.triggered.connect(self.start_DebugWindow)
+        # helpMenu.addAction(debugButton)
+        # testButton = QAction('Test checkbox', self, checkable=True)
+        # testButton.changed.connect(self.start_none)
+        # helpMenu.addAction(testButton)
 
     def _updateUI(self):
         self.timer.stop()
@@ -150,14 +167,9 @@ class CellularAutomataSimulatorApp(QMainWindow):
     def keyPressEvent(self, event):
         if   event.key() == Qt.Key_Space:
             if self.timer_state == True :
-                self.timer_state = False
-                self.timer.stop()
-                self.__curentIcoId = 0
-                self.setWindowTitle(self.title +" - [PAUSED]")
+                self.timer_stop()
             else :
-                self.timer_state = True
-                self.timer.start(self.settings.get_timerperiod())
-                self.setWindowTitle(self.title)
+                self.timer_start()
         elif event.key() == Qt.Key_N and self.timer_state == False:
             self.timerTimeoutEvent()
         elif event.key() == Qt.Key_Escape:
@@ -166,6 +178,18 @@ class CellularAutomataSimulatorApp(QMainWindow):
             self.ceausi_canvas.regen()
         elif event.key() == Qt.Key_C:
             self.ceausi_canvas.cleargrid()
+
+    def timer_stop(self):
+        self.timer_state = False
+        self.timer.stop()
+        self.__curentIcoId = 0
+        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        self.setWindowTitle(self.title +" - [PAUSED]")
+
+    def timer_start(self):
+        self.timer_state = True
+        self.timer.start(self.settings.get_timerperiod())
+        self.setWindowTitle(self.title)
 
 # *------------------------------Windows Handlers----------------------------- *
 
@@ -180,11 +204,20 @@ class CellularAutomataSimulatorApp(QMainWindow):
         print("start_none")
         pass
 
+    def switchToDrawMode(self):
+        #self.timer_stop()
+        # print("switchToDrawMode : ", self.settings.get_currentmode(), end=" -> ")
+        self.settings.set_currentmode(self.settings.get_drawmodeID())
+        # print(self.settings.get_currentmode())
+
+    def switchToSelectionMode(self):
+        #self.timer_stop()
+        # print("switchToSelectionMode : ", self.settings.get_currentmode(), end=" -> ")
+        self.settings.set_currentmode(self.settings.get_selectionmodeID())
+        # print(self.settings.get_currentmode())
+
     def start_openElemFileWindow(self):
-        self.timer.stop()
-        self.timer_state = False
-        self.setWindowTitle(self.title + " - [PAUSED]")
-        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        self.timer_stop()
         errorHandler(
             self.ceausi_canvas.openElemFileDialog,
             self.ceausi_canvas.update,
@@ -193,19 +226,17 @@ class CellularAutomataSimulatorApp(QMainWindow):
         )
 
 
+    def start_SettingsWindow(self):
+        self.wSettingsWindow = SettingsWindow(self)
+        self.wSettingsWindow.show()
+
     def start_openGridFileWindow(self):
-        self.timer.stop()
-        self.timer_state = False
-        self.setWindowTitle(self.title + " - [PAUSED]")
-        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        self.timer_stop()
         self.ceausi_canvas.openGridFileDialog()
         self.ceausi_canvas.update()
 
     def start_saveGridFileWindow(self):
-        self.timer.stop()
-        self.timer_state = False
-        self.setWindowTitle(self.title + " - [PAUSED]")
-        self.setWindowIcon(QIcon('lib/meta/ico.png'))
+        self.timer_stop()
         self.ceausi_canvas.saveGridFileDialog()
 
     def start_RulesWindow(self):

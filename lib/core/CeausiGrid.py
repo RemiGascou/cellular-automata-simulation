@@ -24,8 +24,8 @@ class CeausiGrid(object):
 
     def cleargrid(self):
         self.grid.clear()
-        for _ in range(self.settings.get_gridheight()):
-            self.grid.append([self.settings.get_valueCellOff() for k in range(self.settings.get_gridwidth())])
+        for _ in range(self.settings.get_gridwidth()):
+            self.grid.append([self.settings.get_valueCellOff() for k in range(self.settings.get_gridheight())])
         self.applyRules()
 
     def updateGrid(self):

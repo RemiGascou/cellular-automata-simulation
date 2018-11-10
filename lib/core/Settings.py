@@ -16,16 +16,18 @@ class Settings(object):
         super(Settings, self).__init__()
         self.timer_period       = 125     #ms
         self.cellsize           = 12      #px
-        self.drawmode           = 0
+        self.drawmodeID         = 0
+        self.selectionmodeID    = 1
+        self.currentmode        = 0
         self.valueCellOn        = 1
         self.valueCellOff       = 0
         self.gridheight         = 0
         self.gridwidth          = 0
         #Colors
         self.colorGridLine      = [175,175,175]
-        self.colorCellOn        = [100,100,100]
+        self.colorCellOn        = [40, 105,210]
         self.colorCellOff       = [255,255,255]
-        self.colorCellOverlay   = [255,100,100]
+        self.colorCellOverlay   = [230,180,180]
 
 # *----------------------------------Get Set------------------------[Values]-- *
 
@@ -65,13 +67,28 @@ class Settings(object):
     def set_gridwidth (self, gridwidth):
         self.gridwidth = gridwidth
 
+# *----------------------------------Get Set-------------------------[Modes]-- *
 
 
-    def get_drawmode (self):
-        return self.drawmode
+    def get_drawmodeID (self):
+        return self.drawmodeID
 
-    def set_drawmode (self, drawmode):
-        self.drawmode = drawmode
+    def set_drawmodeID (self, drawmodeID):
+        self.drawmodeID = drawmodeID
+
+    def get_selectionmodeID (self):
+        return self.selectionmodeID
+
+    def set_selectionmodeID (self, selectionmodeID):
+        self.selectionmodeID = selectionmodeID
+
+    def get_currentmode (self):
+        return self.currentmode
+
+    def set_currentmode (self, currentmode):
+        self.currentmode = currentmode
+
+
 
 
 # *----------------------------------Get Set------------------------[Colors]-- *

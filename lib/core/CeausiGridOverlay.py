@@ -24,12 +24,13 @@ class CeausiGridOverlay(object):
 
     def cleargrid(self):
         self.grid.clear()
-        for _ in range(self.settings.get_gridheight()):
-            self.grid.append([self.settings.get_valueCellOff() for k in range(self.settings.get_gridwidth())])
+        for _ in range(self.settings.get_gridwidth()):
+            self.grid.append([self.settings.get_valueCellOff() for k in range(self.settings.get_gridheight())])
 
     # *----------------------------- Utils ------------------------------------*
 
-    def __drawSquare(self, nodeA, nodeB, value, drawplain=False):
+    def drawSquare(self, nodeA, nodeB, value, drawplain=False):
+        self.cleargrid()
         if nodeA != nodeB and nodeA[0] != -1 and nodeA[1] != -1 and nodeB[0] != -1 and nodeB[1] != -1:
             print(nodeA[0]-nodeB[0], nodeA[1]-nodeB[1])
 

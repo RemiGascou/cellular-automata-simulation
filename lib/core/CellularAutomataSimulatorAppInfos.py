@@ -10,4 +10,7 @@ def get_versionname():
     return "..."
 
 def get_credits():
-    return "© Rémi GASCOU & Bastien ANTOINE - 2018"
+    return "© Rémi GASCOU - 2018"
+
+def get_github_url():
+    return "https://github.com/RemiGascou/cellular-automata-simulation"
