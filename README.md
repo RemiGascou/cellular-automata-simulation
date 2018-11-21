@@ -1,4 +1,4 @@
-# 2Dimensions Cellular Automata Simulator
+# Cellular Automata Simulator
 
 Simulator of 2Dimensions cellular automatas with various user-definded rules.
 
