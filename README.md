@@ -4,6 +4,7 @@ Simulator of 2Dimensions cellular automatas with various user-definded rules.
 
 ## Overview
 
+![2018-11-28_19-19-58](https://user-images.githubusercontent.com/7452553/49172961-a9628f80-f342-11e8-8208-6dd71b187beb.png)
 
 
 ## Controls
