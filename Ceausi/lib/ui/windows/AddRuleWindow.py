@@ -17,7 +17,7 @@ from PyQt5.QtCore import *
 
 class AddRuleWindow(QWidget):
     def __init__(self, parent=None):
-        print("[LOG] Parent of AddRuleWindow", parent)
+        #print("[LOG] Parent of AddRuleWindow", parent)
         super(AddRuleWindow, self).__init__()
         self.title = 'AddRuleWindow'
         self.left   = 0

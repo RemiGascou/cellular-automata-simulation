@@ -17,7 +17,7 @@ from PyQt5.QtCore import *
 
 class SettingsWindow(QWidget):
     def __init__(self, settings:Settings, parent=None):
-        print("[LOG] Parent of SettingsWindow", parent)
+        #print("[LOG] Parent of SettingsWindow", parent)
         super(SettingsWindow, self).__init__()
         self.title = 'Settings'
         self.left   = 100

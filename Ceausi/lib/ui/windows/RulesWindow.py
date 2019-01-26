@@ -18,7 +18,7 @@ from PyQt5.QtCore import *
 
 class RulesWindow(QWidget):
     def __init__(self, parent=None):
-        print("[LOG] Parent of RulesWindow", parent)
+        #print("[LOG] Parent of RulesWindow", parent)
         super(RulesWindow, self).__init__()
         self.title       = 'RulesWindow'
         self.margin_left = 150

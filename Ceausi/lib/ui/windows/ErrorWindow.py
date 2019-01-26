@@ -16,8 +16,8 @@ from PyQt5.QtCore import *
 
 
 class ErrorWindow(QWidget):
-    def __init__(self, title, errormsg, errorcode=-1 parent=None):
-        print("[LOG] Parent of ErrorWindow", parent)
+    def __init__(self, title, errormsg, errorcode=-1, parent=None):
+        #print("[LOG] Parent of ErrorWindow", parent)
         super(ErrorWindow, self).__init__()
         self.title     = title
         self.errormsg  = errormsg
