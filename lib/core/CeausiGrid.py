@@ -120,7 +120,7 @@ class CeausiGrid(object):
         self.grid = nextgrid
 
     def _generateRandomgrid(self):
-        self.grid = [[choice([self.settings.get_valueCellOn(), self.settings.get_valueCellOff()]) for xk in range(self.settings.get_gridwidth())] for yk in range(self.settings.get_gridheight())]
+        self.grid = [[choice([self.settings.get_valueCellOn(), self.settings.get_valueCellOff()]) for yk in range(self.settings.get_gridheight())] for xk in range(self.settings.get_gridwidth())]
         return self.grid
 
 # *------------------------------- Utils --------------------------------------*
